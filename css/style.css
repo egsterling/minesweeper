@@ -1,0 +1,58 @@
+#container {
+    display: grid;
+    table-layout: fixed;
+    
+    border-collapse: collapse;
+}
+
+body {
+    background-color: #b2edb2;
+}
+
+.row {
+    display: block;
+    /* margin: 15px; */
+}
+
+div {
+    line-height: 0;
+}
+
+.box {
+    display: inline-block;
+    padding: 25px 15px 5px 15px;
+    height: 17px;
+    width: 17px;
+    text-align: center;
+    vertical-align: bottom;
+    /* margin: 15px; */
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    color: transparent;
+    font-size: 25px;
+    background-color: #28be28;
+}
+
+.uncoveredBox {
+    color: black;
+    font-weight: bold;
+    font-family:'Courier New', Courier, monospace;
+}
+
+.box:hover {
+    background-color: green;
+}
+
+.last-in-row {
+    border-right: 1px solid black;
+}
+.last-in-col {
+    border-bottom: 1px solid black;
+}
+
+.one {
+    color: #8f2626;
+}
+.two {
+    color: #3a2828;
+}
