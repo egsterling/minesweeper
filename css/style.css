@@ -7,6 +7,7 @@
 
 body {
     background-color: #b2edb2;
+    font-weight: bold;
 }
 
 .row {
@@ -21,8 +22,8 @@ div {
 .box {
     display: inline-block;
     padding: 25px 15px 5px 15px;
-    height: 17px;
-    width: 17px;
+    /* height: 17px;
+    width: 17px; */
     text-align: center;
     vertical-align: bottom;
     /* margin: 15px; */
@@ -31,6 +32,30 @@ div {
     color: transparent;
     font-size: 25px;
     background-color: #28be28;
+}
+
+.flags {
+    color: #820404;
+}
+
+.easy {
+    height: 17px;
+    width: 17px;
+    font-size: 25px;
+}
+
+.medium {
+    height: 14px;
+    width: 14px;
+    font-size: 22px;
+    padding-top: 22px;
+}
+
+.hard {
+    height: 12px;
+    width: 7px;
+    font-size: 18px;
+    padding-top: 18px;
 }
 
 .uncoveredBox {
@@ -48,11 +73,4 @@ div {
 }
 .last-in-col {
     border-bottom: 1px solid black;
-}
-
-.one {
-    color: #8f2626;
-}
-.two {
-    color: #3a2828;
 }

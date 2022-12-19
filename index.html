@@ -10,6 +10,15 @@
 </head>
 <body>
     <h1>Minesweeper!</h1>
+    <label for="difficulty">Difficulty:</label>
+    <select name="difficulty" id="difficulty">
+        <option value="easy">Easy</option>
+        <option value="medium">Medium</option>
+        <option value="hard">Hard</option>
+    </select>
+    <br><br>
+    <div class="flags">Flags remaining: <span id="flags"></span></div>
+    <br><br>
     <div id="container"></div>
     <h2 id="winLose"></h2>
     <button id="playAgain">Start a new game</button>

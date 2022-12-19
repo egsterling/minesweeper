@@ -1,10 +1,17 @@
 const container = document.getElementById("container");
-const NUM_ROWS = 8;
-const NUM_COLS = 10;
-const NUM_BOMBS = 10;
-const map = Array.from({length:NUM_ROWS}, () => Array.from({length: NUM_COLS}, () => ({"num": 0, "uncovered": false, "flag": false})));
+
+const EASY_ROWS_COLS_BOMBS = [8, 10, 10];
+const MEDIUM_ROWS_COLS_BOMBS = [14, 18, 40];
+const HARD_ROWS_COLS_BOMBS = [20, 24, 99];
+let NUM_ROWS = EASY_ROWS_COLS_BOMBS[0];
+let NUM_COLS = EASY_ROWS_COLS_BOMBS[1];
+let NUM_BOMBS = EASY_ROWS_COLS_BOMBS[2];
+let flagsLeft = NUM_BOMBS;
+let map = Array.from({length:NUM_ROWS}, () => Array.from({length: NUM_COLS}, () => ({"num": 0, "visited": false, "flag": false})));
 const winLoseMessage = document.getElementById("winLose");
-const playAgainButton = document.getElementById("playAgain")
+const playAgainButton = document.getElementById("playAgain");
+const difficulty = document.getElementById("difficulty");
+const flags = document.getElementById("flags");
 const WIN_COUNT = NUM_ROWS * NUM_COLS - NUM_BOMBS;
 let gameStarted = false;
 const colorMap = {
@@ -24,8 +31,10 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+
 function makeGrid(rows, columns) {
     console.log("makegrid");
+    flags.innerHTML = flagsLeft;
     winLoseMessage.style.display = "none";
     playAgainButton.style.display = "none";
     for(let x = 0; x < rows; ++x) {
@@ -35,6 +44,15 @@ function makeGrid(rows, columns) {
         for(let y = 0; y < columns; ++y) {
             const box = document.createElement("span");
             box.className = "box";
+            if(difficulty.value === "easy") {
+                box.classList.add("easy");
+            }
+            else if(difficulty.value === "medium") {
+                box.classList.add("medium");
+            }
+            else if(difficulty.value === "hard") {
+                box.classList.add("hard");
+            }
             if(y === columns - 1) {
                 box.classList.add("last-in-row");
             }
@@ -45,7 +63,6 @@ function makeGrid(rows, columns) {
             
         }
         container.appendChild(row);
-        console.log(container);
     }
 }
 
@@ -110,7 +127,7 @@ function revealBomb(box, i) {
         box.classList.add("uncoveredBox");
         box.style.backgroundColor = "#000000";
         box.style.color = "#ffffff";
-    }, 150 * i);
+    }, 100 * i);
     
 }
 
@@ -135,7 +152,6 @@ function loseGame() {
     winLoseMessage.innerHTML = "You lose!";
     winLoseMessage.style.display = "block";
     playAgainButton.style.display = "block";
-    console.log("WHAT", container.childNodes);
 }
 
 function checkWin() {
@@ -233,13 +249,15 @@ function flagPlace(row, col) {
     const box = container.childNodes[row].childNodes[col];
     box.addEventListener("contextmenu", (event) => {
         event.preventDefault();
-        if(map[row][col]['visited'] || !gameStarted) {
+        if(map[row][col]['visited'] || !gameStarted || flagsLeft === 0) {
             console.log('visited');
             return;
         }
         if(!map[row][col]['flag']) {
             box.style.backgroundColor = "#8f2626";
             map[row][col]['flag'] = true;
+            --flagsLeft;
+            flags.innerHTML = flagsLeft;
         }
         else {
             box.style.backgroundColor = "#28be28";
@@ -269,12 +287,14 @@ function runGame() {
 }
 
 function reset() {
+    map = Array.from({length:NUM_ROWS}, () => Array.from({length: NUM_COLS}, () => ({"num": 0, "visited": false, "flag": false})));
+    flagsLeft = NUM_BOMBS;
+    console.log(map);
     for(let i = 0; i < NUM_ROWS; ++i) {
         for(let j = 0; j < NUM_COLS; ++j) {
             map[i][j] = {"num": 0, "uncovered": false, "flag": false};
         }
     }
-    console.log(container.childNodes);
     // container.childNodes.forEach(node => {
     //     container.removeChild(node);
     //     console.log(container.childNodes);
@@ -289,6 +309,26 @@ window.addEventListener("load", runGame);
 playAgainButton.addEventListener("click", function() {
     reset();
     // setTimeout(runGame, 1000);
+    runGame();
+});
+difficulty.addEventListener("change", (event) => {
+    if(event.target.value === "easy") {
+        NUM_ROWS = EASY_ROWS_COLS_BOMBS[0];
+        NUM_COLS = EASY_ROWS_COLS_BOMBS[1];
+        NUM_BOMBS = EASY_ROWS_COLS_BOMBS[2];
+        console.log(NUM_ROWS, NUM_COLS, NUM_BOMBS);
+    }
+    else if(event.target.value === "medium") {
+        NUM_ROWS = MEDIUM_ROWS_COLS_BOMBS[0];
+        NUM_COLS = MEDIUM_ROWS_COLS_BOMBS[1];
+        NUM_BOMBS = MEDIUM_ROWS_COLS_BOMBS[2];
+    }
+    else {
+        NUM_ROWS = HARD_ROWS_COLS_BOMBS[0];
+        NUM_COLS = HARD_ROWS_COLS_BOMBS[1];
+        NUM_BOMBS = HARD_ROWS_COLS_BOMBS[2];
+    }
+    reset();
     runGame();
 });
 
