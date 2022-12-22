@@ -8,6 +8,7 @@ let NUM_COLS = EASY_ROWS_COLS_BOMBS[1];
 let NUM_BOMBS = EASY_ROWS_COLS_BOMBS[2];
 let flagsLeft = NUM_BOMBS;
 let map = Array.from({length:NUM_ROWS}, () => Array.from({length: NUM_COLS}, () => ({"num": 0, "visited": false, "flag": false})));
+let lost = false;
 const winLoseMessage = document.getElementById("winLose");
 const playAgainButton = document.getElementById("playAgain");
 const difficulty = document.getElementById("difficulty");
@@ -131,8 +132,9 @@ function revealBomb(box, i) {
     
 }
 
-function loseGame() {
+function loseGame(thisBox) {
     console.log("lose");
+    lost = true;
     let bombLocs = [];
     for(row of container.childNodes) {
         for(box of row.childNodes) {
@@ -141,9 +143,18 @@ function loseGame() {
                 
                 // revealBomb(box, i);
             }
-            else {
+            if(box.style.backgroundColor === "rgb(196, 255, 196)") {
+                if(box.innerHTML === "") {
+                    box.style.backgroundColor = "#a0a0a0";
+                }
+                else {
+                    box.style.backgroundColor = "#606060";
+                }
+            }
+            else if(box !== thisBox) {
                 box.style.backgroundColor = "gray";
             }
+            
         }
     }
     for(let i = 0; i < bombLocs.length; ++i) {
@@ -192,7 +203,7 @@ function uncover(x, y) {
     else {
         thisBox.style.backgroundColor = "#000000";
         thisBox.style.color = "#ffffff";
-        loseGame();
+        loseGame(thisBox);
     }
     // thisBox.style.color = "red";
 }
@@ -200,18 +211,10 @@ function uncover(x, y) {
 function bfs(r, c) {
     let queue = [];
     queue.push([r, c]);
-    // console.log(queue.length);
-    // let numIterations = 0;
     while(queue.length !== 0) {
-
         const [x, y] = queue.shift();
         checkSurrounding(x, y, (i, j) => {
-            // const thisBox = container.childNodes[x + i].childNodes[y + j];
-            // thisBox.classList.add("uncoveredBox");
-            // thisBox.style.backgroundColor = "#28be28";
-            // thisBox.style.color = "red";
             uncover(x + i, y + j);
-            
             if(map[x + i][y + j]['num'] === 0 && !map[x + i][y + j]['visited']) {
                 queue.push([x + i, y + j]);
             }
@@ -223,13 +226,10 @@ function bfs(r, c) {
 function clickBox(row, col) {
     const box = container.childNodes[row].childNodes[col];
     box.addEventListener("click", function() {
-        console.log(map[row][col]['num']);
-        if(map[row][col]['visited']) {
-            console.log("visited");
+        if(map[row][col]['visited'] || lost) {
             return;
         }
         if(!gameStarted) {
-            // console.log(box);
             scatterBombs(NUM_ROWS, NUM_COLS, NUM_BOMBS, row, col);
             fillBoard(NUM_ROWS, NUM_COLS);
             gameStarted = true;
@@ -249,8 +249,7 @@ function flagPlace(row, col) {
     const box = container.childNodes[row].childNodes[col];
     box.addEventListener("contextmenu", (event) => {
         event.preventDefault();
-        if(map[row][col]['visited'] || !gameStarted || flagsLeft === 0) {
-            console.log('visited');
+        if(map[row][col]['visited'] || !gameStarted || flagsLeft === 0 || lost) {
             return;
         }
         if(!map[row][col]['flag']) {
@@ -288,17 +287,13 @@ function runGame() {
 
 function reset() {
     map = Array.from({length:NUM_ROWS}, () => Array.from({length: NUM_COLS}, () => ({"num": 0, "visited": false, "flag": false})));
+    lost = false;
     flagsLeft = NUM_BOMBS;
-    console.log(map);
     for(let i = 0; i < NUM_ROWS; ++i) {
         for(let j = 0; j < NUM_COLS; ++j) {
             map[i][j] = {"num": 0, "uncovered": false, "flag": false};
         }
     }
-    // container.childNodes.forEach(node => {
-    //     container.removeChild(node);
-    //     console.log(container.childNodes);
-    // });
     while(container.firstChild) {
         container.removeChild(container.firstChild);
     }
@@ -306,17 +301,17 @@ function reset() {
 }
 
 window.addEventListener("load", runGame);
+
 playAgainButton.addEventListener("click", function() {
     reset();
-    // setTimeout(runGame, 1000);
     runGame();
 });
+
 difficulty.addEventListener("change", (event) => {
     if(event.target.value === "easy") {
         NUM_ROWS = EASY_ROWS_COLS_BOMBS[0];
         NUM_COLS = EASY_ROWS_COLS_BOMBS[1];
         NUM_BOMBS = EASY_ROWS_COLS_BOMBS[2];
-        console.log(NUM_ROWS, NUM_COLS, NUM_BOMBS);
     }
     else if(event.target.value === "medium") {
         NUM_ROWS = MEDIUM_ROWS_COLS_BOMBS[0];
