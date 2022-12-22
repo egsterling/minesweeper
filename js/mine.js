@@ -8,11 +8,13 @@ let NUM_COLS = EASY_ROWS_COLS_BOMBS[1];
 let NUM_BOMBS = EASY_ROWS_COLS_BOMBS[2];
 let flagsLeft = NUM_BOMBS;
 let map = Array.from({length:NUM_ROWS}, () => Array.from({length: NUM_COLS}, () => ({"num": 0, "visited": false, "flag": false})));
-let lost = false;
+let gameOver = false;
+let intervalId = null;
 const winLoseMessage = document.getElementById("winLose");
 const playAgainButton = document.getElementById("playAgain");
 const difficulty = document.getElementById("difficulty");
 const flags = document.getElementById("flags");
+const time = document.getElementById("timer");
 const WIN_COUNT = NUM_ROWS * NUM_COLS - NUM_BOMBS;
 let gameStarted = false;
 const colorMap = {
@@ -134,7 +136,8 @@ function revealBomb(box, i) {
 
 function loseGame(thisBox) {
     console.log("lose");
-    lost = true;
+    gameOver = true;
+    clearInterval(intervalId);
     let bombLocs = [];
     for(row of container.childNodes) {
         for(box of row.childNodes) {
@@ -178,6 +181,7 @@ function checkWin() {
 
 function winGame() {
     console.log("win");
+    clearInterval(intervalId);
     winLoseMessage.innerHTML = "You win!";
     winLoseMessage.style.display = "block";
     playAgainButton.style.display = "block";
@@ -226,7 +230,7 @@ function bfs(r, c) {
 function clickBox(row, col) {
     const box = container.childNodes[row].childNodes[col];
     box.addEventListener("click", function() {
-        if(map[row][col]['visited'] || lost) {
+        if(map[row][col]['visited'] || gameOver) {
             return;
         }
         if(!gameStarted) {
@@ -249,7 +253,7 @@ function flagPlace(row, col) {
     const box = container.childNodes[row].childNodes[col];
     box.addEventListener("contextmenu", (event) => {
         event.preventDefault();
-        if(map[row][col]['visited'] || !gameStarted || flagsLeft === 0 || lost) {
+        if(map[row][col]['visited'] || !gameStarted || flagsLeft === 0 || gameOver) {
             return;
         }
         if(!map[row][col]['flag']) {
@@ -268,9 +272,6 @@ function flagPlace(row, col) {
 
 
 function handleBoxClick() {
-    // container.childNodes.forEach(row => {
-    //     row.childNodes.forEach(box => clickBox(box));
-    // });
     for(let r = 0; r < NUM_ROWS; ++r) {
         for(let c = 0; c < NUM_COLS; ++c) {
             clickBox(r, c);
@@ -282,12 +283,15 @@ function handleBoxClick() {
 function runGame() {
     console.log("starting");
     makeGrid(NUM_ROWS, NUM_COLS);
+    timer();
     handleBoxClick();
 }
 
 function reset() {
     map = Array.from({length:NUM_ROWS}, () => Array.from({length: NUM_COLS}, () => ({"num": 0, "visited": false, "flag": false})));
-    lost = false;
+    gameOver = false;
+    clearInterval(intervalId);
+    time.innerHTML = 0;
     flagsLeft = NUM_BOMBS;
     for(let i = 0; i < NUM_ROWS; ++i) {
         for(let j = 0; j < NUM_COLS; ++j) {
@@ -298,6 +302,15 @@ function reset() {
         container.removeChild(container.firstChild);
     }
     gameStarted = false;
+}
+
+function timer() {
+    const start = Date.now();
+    const deltaFunc = function() {
+        const delta = Date.now() - start;
+        time.innerHTML = Math.floor(delta/1000);
+    }
+    intervalId = setInterval(deltaFunc, 1000);
 }
 
 window.addEventListener("load", runGame);

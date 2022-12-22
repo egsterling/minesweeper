@@ -32,6 +32,7 @@ div {
     color: transparent;
     font-size: 25px;
     background-color: #28be28;
+    cursor: default;
 }
 
 .flags {
