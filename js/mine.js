@@ -39,7 +39,7 @@ function makeGrid(rows, columns) {
     console.log("makegrid");
     flags.innerHTML = flagsLeft;
     winLoseMessage.style.display = "none";
-    playAgainButton.style.display = "none";
+    playAgainButton.innerHTML = "Reset";
     for(let x = 0; x < rows; ++x) {
         const row = document.createElement("div");
         row.className = "row";
@@ -142,9 +142,12 @@ function loseGame(thisBox) {
     for(row of container.childNodes) {
         for(box of row.childNodes) {
             if(box.innerHTML === 'B') {
-                bombLocs.push(box);
-                
-                // revealBomb(box, i);
+                if(box === thisBox) {
+                    box.style.backgroundColor = "#cc0000";
+                }
+                else {
+                    bombLocs.push(box);
+                }
             }
             if(box.style.backgroundColor === "rgb(196, 255, 196)") {
                 if(box.innerHTML === "") {
@@ -165,7 +168,7 @@ function loseGame(thisBox) {
     }
     winLoseMessage.innerHTML = "You lose!";
     winLoseMessage.style.display = "block";
-    playAgainButton.style.display = "block";
+    playAgainButton.innerHTML = "Start a new game";
 }
 
 function checkWin() {
@@ -184,7 +187,7 @@ function winGame() {
     clearInterval(intervalId);
     winLoseMessage.innerHTML = "You win!";
     winLoseMessage.style.display = "block";
-    playAgainButton.style.display = "block";
+    playAgainButton.innerHTML = "Start a new game";
     for(row of container.childNodes) {
         for(box of row.childNodes) {
             if(box.innerHTML === 'B') {
