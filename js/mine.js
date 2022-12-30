@@ -1,5 +1,4 @@
 const container = document.getElementById("container");
-
 const EASY_ROWS_COLS_BOMBS = [8, 10, 10];
 const MEDIUM_ROWS_COLS_BOMBS = [14, 18, 40];
 const HARD_ROWS_COLS_BOMBS = [20, 24, 99];
@@ -256,21 +255,20 @@ function flagPlace(row, col) {
     const box = container.childNodes[row].childNodes[col];
     box.addEventListener("contextmenu", (event) => {
         event.preventDefault();
-        if(map[row][col]['visited'] || !gameStarted || flagsLeft === 0 || gameOver) {
+        if(map[row][col]['visited'] || !gameStarted || gameOver) {
             return;
         }
-        if(!map[row][col]['flag']) {
+        if(map[row][col]['flag']) {
+            box.style.backgroundColor = "#28be28";
+            map[row][col]['flag'] = false;
+        }
+        else if(flagsLeft !== 0) {
             box.style.backgroundColor = "#8f2626";
             map[row][col]['flag'] = true;
             --flagsLeft;
             flags.innerHTML = flagsLeft;
         }
-        else {
-            box.style.backgroundColor = "#28be28";
-            map[row][col]['flag'] = false;
-        }
     })
-
 }
 
 
